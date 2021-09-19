@@ -6,14 +6,19 @@ import {
   MenuItem,
   Container,
   CircularProgress,
+  Typography,
 } from "@material-ui/core";
 
+const PLAYLIST_ID = "PLI1JPzGwNY3WuG9C2fDIlN4WMrb8m2ZBj";
+
+const YOUTUBE_PLAYLIST_ITEMS_API =
+  "https://www.googleapis.com/youtube/v3/playlistItems";
+
 export default function Home() {
-  const [linkVideo, setlinkVideo] = useState("");
-  const [videoID, setvideoID] = useState("");
-  const [playlistInfo, setplaylistInfo] = useState(null);
+  const [playlistInfo, setplaylistInfo] = useState([]);
   const [loading, setloading] = useState(false);
-  // const [playlistId, setplaylistId] = useState("");
+  const [videoInfo, setvideoInfo] = useState({});
+  const [episode, setepisode] = useState(0);
 
   const processLink = (url) => {
     var regExp =
@@ -40,23 +45,38 @@ export default function Home() {
   //   });
   // };
 
-  const fetchPlaylist = async () => {
-    const YOUTUBE_PLAYLIST_ITEMS_API =
-      "https://www.googleapis.com/youtube/v3/playlistItems";
-    const res = await fetch(
-      `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=100&playlistId=PLI1JPzGwNY3WuG9C2fDIlN4WMrb8m2ZBj&key=AIzaSyAJGBhsuQn0nJwNSv1dMRgSImHPmWo-WzM`
-    );
-    const data = await res.json();
-    setplaylistInfo(data);
-  };
-
   useEffect(() => {
+    let canLoadMore = false;
+    let result = [];
+    let currentPageToken = null;
+    const fetchPlaylist = async () => {
+      do {
+        const fetchAPI = `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=AIzaSyAJGBhsuQn0nJwNSv1dMRgSImHPmWo-WzM`;
+        const res = await fetch(
+          canLoadMore ? fetchAPI + `&pageToken=` + currentPageToken : fetchAPI
+        );
+        const data = await res.json();
+        result = result.concat(data.items);
+        if (data?.items?.length === 50) {
+          canLoadMore = true;
+          currentPageToken = data.nextPageToken;
+        } else {
+          canLoadMore = false;
+        }
+      } while (canLoadMore);
+      setplaylistInfo(result);
+      setvideoInfo(result[0]);
+      setepisode(0);
+    };
     setloading(true);
     fetchPlaylist().then(() => {
-      setvideoID(playlistInfo?.items[0].snippet.resourceId.videoId);
       setloading(false);
     });
   }, []);
+
+  useEffect(() => {
+    setvideoInfo(playlistInfo[episode]);
+  }, [episode, playlistInfo]);
 
   return (
     <div>
@@ -73,7 +93,17 @@ export default function Home() {
         }}
       >
         {loading ? (
-          <CircularProgress />
+          <div
+            style={{
+              width: "100vw",
+              height: "100vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <CircularProgress />
+          </div>
         ) : (
           <Container
             style={{
@@ -96,21 +126,38 @@ export default function Home() {
           onChange={(e) => setplaylistId(e.target.value)}
           onBlur={() => fetchPlaylist()}
         /> */}
-            <YouTube videoId={videoID} />
+            <YouTube
+              videoId={videoInfo?.snippet?.resourceId?.videoId}
+              onEnd={() => setepisode(episode + 1)}
+              opts={{
+                playerVars: {
+                  autoplay: 1,
+                },
+              }}
+            />
+            <Typography
+              style={{ marginTop: 24, width: "50%" }}
+              align="center"
+              variant="h6"
+            >
+              {videoInfo?.snippet?.title}
+            </Typography>
             {playlistInfo && (
               <Select
                 variant="outlined"
                 onChange={(e) => {
-                  setvideoID(e.target.value);
+                  setvideoInfo(e.target.value);
                 }}
                 style={{ marginTop: 20, width: "50%" }}
-                value={videoID}
+                value={videoInfo}
               >
-                {playlistInfo?.items?.map(({ id, snippet = {} }) => {
-                  const { title, resourceId = {} } = snippet;
+                {playlistInfo?.map((item) => {
                   return (
-                    <MenuItem value={resourceId.videoId} key={id}>
-                      {title}
+                    <MenuItem
+                      value={item}
+                      key={item.snippet.resourceId.videoId}
+                    >
+                      {item.snippet.title}
                     </MenuItem>
                   );
                 })}
