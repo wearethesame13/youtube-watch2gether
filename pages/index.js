@@ -51,7 +51,7 @@ export default function Home() {
     let currentPageToken = null;
     const fetchPlaylist = async () => {
       do {
-        const fetchAPI = `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=AIzaSyAJGBhsuQn0nJwNSv1dMRgSImHPmWo-WzM`;
+        const fetchAPI = `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=AIzaSyDNCLnEHTWOkeq_tyNmtxNWAiCSBEdbMmU`;
         const res = await fetch(
           canLoadMore ? fetchAPI + `&pageToken=` + currentPageToken : fetchAPI
         );
