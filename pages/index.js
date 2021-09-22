@@ -48,7 +48,7 @@ export default function Home() {
   // };
 
   console.log(process.env.YOUTUBE_API)
-  console.log(process.env.YOUTUBE_API_KEY)
+  console.log(process.env.NEXT_PUBLIC_YOUTUBE_API_KEY)
 
   useEffect(() => {
     let canLoadMore = false;
@@ -56,7 +56,7 @@ export default function Home() {
     let currentPageToken = null;
     const fetchPlaylist = async () => {
       do {
-        const fetchAPI = `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${process.env.YOUTUBE_API || process.env.YOUTUBE_API_KEY || 'AIzaSyDNCLnEHTWOkeq_tyNmtxNWAiCSBEdbMmU'}`;
+        const fetchAPI = `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${process.env.NEXT_PUBLIC_YOUTUBE_API_KEY}`;
         const res = await fetch(
           canLoadMore ? fetchAPI + `&pageToken=` + currentPageToken : fetchAPI
         );
