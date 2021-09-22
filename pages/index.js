@@ -82,7 +82,7 @@ export default function Home() {
     <div>
       <Head>
         <title>Phim cho Ngọc coi</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/kiss.svg" />
       </Head>
       <main
         style={{
