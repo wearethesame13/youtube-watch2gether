@@ -47,8 +47,6 @@ export default function Home() {
   //   });
   // };
 
-  console.log(process.env.YOUTUBE_API)
-  console.log(process.env.NEXT_PUBLIC_YOUTUBE_API_KEY)
 
   useEffect(() => {
     let canLoadMore = false;
