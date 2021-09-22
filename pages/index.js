@@ -47,13 +47,16 @@ export default function Home() {
   //   });
   // };
 
+  console.log(process.env.YOUTUBE_API)
+  console.log(process.env.YOUTUBE_API_KEY)
+
   useEffect(() => {
     let canLoadMore = false;
     let result = [];
     let currentPageToken = null;
     const fetchPlaylist = async () => {
       do {
-        const fetchAPI = `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${process.env.YOUTUBE_API_KEY}`;
+        const fetchAPI = `${YOUTUBE_PLAYLIST_ITEMS_API}?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${process.env.YOUTUBE_API || process.env.YOUTUBE_API_KEY || 'AIzaSyDNCLnEHTWOkeq_tyNmtxNWAiCSBEdbMmU'}`;
         const res = await fetch(
           canLoadMore ? fetchAPI + `&pageToken=` + currentPageToken : fetchAPI
         );
